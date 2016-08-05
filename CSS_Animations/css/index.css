@@ -1,0 +1,207 @@
+@import 'https://fonts.googleapis.com/css?family=Raleway';
+/* Animations are from this point */
+@keyframes frameAn{
+	from{	
+		opacity: 0;
+	}
+	to{
+		opacity: 1;
+	}
+}
+@keyframes spin { 
+	from { 
+		transform:rotate(0deg); 
+	}
+	to{
+		transform: rotate(360deg);
+	} 
+}
+@keyframes menuAn{
+	100% { 
+		height: 30px;
+		text-shadow: 10px 10px black;
+	} 
+}
+@keyframes menuAnchorAn{
+	100% { 
+		color: black;
+	} 
+}
+@keyframes logoAn{
+	0%{
+		opacity: 0;
+		top: 0;
+	}
+	50%{
+		top: 200px;
+	}
+	100%{
+		opacity: 1;
+		top: 170px;
+
+	}
+}
+/* Rest of the styling for the web files */
+body{
+	background-image: url('../img/bg.jpg');
+	background-color: papayawhip;
+	background-repeat: repeat;
+	margin: 0;
+	padding: 0;
+}
+#index-div{
+	position: relative;
+	margin: 0 auto;
+	width: 60%;
+	margin-top: 30px;
+}
+#logo{
+	position: absolute;
+	top: 170px;
+	left: 150px;
+	z-index: 3; 
+	/*Animation code*/
+	animation-name: logoAn;
+	animation-duration: 1s;
+	animation-direction: ease;
+	animation-iteration-count: 1;
+}
+#frame{
+	position: absolute;
+	top: 0;
+	left: 0;
+	animation-name: frameAn;
+	animation-duration: 10s;
+	z-index: 0;
+}
+#big-circle {
+    animation-name: spin;
+    animation-duration: 7s;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+    z-index: 2;
+    top: 68px;
+    left: 183px;
+    position: absolute;
+}
+#menu{
+	position: absolute;
+	left: 0px;
+    top: 460px;
+}
+#menu li{
+	list-style: none;
+	display: inline-block;
+	z-index: 4;
+	padding: 0 40px;
+	font-family: 'Raleway', sans-serif;
+	font-weight: lighter;
+}
+#menu a:link{
+	font-size:30px;
+	color: #9D9576; 
+	text-decoration: none;
+}
+#menu > ol > li > a:hover + .menu-bg {
+	animation-name: menuAn;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: 1;
+	animation-fill-mode:forwards;
+}
+#menu > ol > li > a:hover {
+	animation-name: menuAnchorAn;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: 1;
+	animation-fill-mode:forwards;
+}
+#menu > ol > li:nth-child(1) > span{
+	display:block;
+	background-color: #8CD0C1;
+	height: 10px;
+	
+}
+#menu > ol > li:nth-child(2) > span{
+	display:block;
+	background-color: #D4C77B;
+	height: 10px;
+	
+}
+#menu > ol > li:nth-child(3) > span{
+	display:block;
+	background-color: #B14E81;
+	height: 10px;
+	
+}
+#circle1{
+	height: 50px;
+	width: 50px;
+	position: absolute;
+	top: 0px;
+	left: 350px;
+	z-index: 5;
+	animation-name: spin;
+	animation-direction: reverse;
+	animation-iteration-count: infinite;
+	animation-duration: 20s;
+}
+#circle2{
+	height: 100px;
+	width: 100px;
+	position: absolute;
+	top: 19px;
+	left: 363px;
+	z-index: 4;
+	animation-name: spin;
+	animation-iteration-count: infinite;
+	animation-duration: 25s;
+}
+#circle3{
+    height: 130px;
+    width: 130px;
+    position: absolute;
+    top: 74px;
+    left: 414px;
+    z-index: 5;
+    animation-name: spin;
+	animation-direction: reverse;
+	animation-iteration-count: infinite;
+	animation-duration: 15s;
+}
+#circle4 {
+    height: 120px;
+    width: 120px;
+    position: absolute;
+    top: 150px;
+    left: 430px;
+    z-index: 1;
+    animation-name: spin;
+
+	animation-iteration-count: infinite;
+	animation-duration: 25s;
+}
+#circle5 {
+    height: 190px;
+    width: 190px;
+    position: absolute;
+    top: 243px;
+    left: 363px;
+    z-index: 2;
+    animation-name: spin;
+	animation-direction: reverse;
+	animation-iteration-count: infinite;
+	animation-duration: 30s;
+}
+footer{
+	position: absolute;
+	top: 600px;
+	color: #9D9576;
+	text-align: center;
+	font-weight: bolder;
+	font-family: 'Raleway', sans-serif;
+	letter-spacing: 3px;
+	text-shadow: black;
+	top: 575px;
+	left: 40%;
+}

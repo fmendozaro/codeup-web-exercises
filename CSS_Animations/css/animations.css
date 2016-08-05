@@ -1,0 +1,116 @@
+/*Makes the boxes move around*/
+@keyframes moveBox{
+	from{
+		margin-left: 0%;
+	}
+	to{
+		margin-left: 80%;
+		background-color: #3bb1ed;
+		border: 5px dotted black;
+		transform: rotate(360deg);
+		border-radius: 50px;
+	}
+}
+/*Makes the ship fly around space*/
+@keyframes fly{
+	0%{
+		bottom: 1%;
+		left: 0%;
+
+	}
+	23%{
+		bottom:20%;
+		left: 10%;
+		transform: rotate(15deg);
+	}
+	100%{
+		bottom:80%;
+		left: 65%;
+		transform: rotate(20deg);
+		width: 100px;
+		height: 60px;
+	}
+}
+/*Makes the background move when the ship takes off*/
+@keyframes travel{
+	0%{
+		background-position: 0;
+	}
+	25%{
+		background-position: -1000px 1000px;
+	}
+	100%{
+		background-position: -7000px 8000px;
+	}
+}
+
+#box1, .boxes{
+	/*Shared properties for all .boxes*/
+	width: 100px;
+	height: 100px;
+	color: black;
+	font-size: 20px;
+	text-align: center;
+	background-color: none;
+	border: 1px solid black;
+	/* Animation code */
+	animation-name: moveBox;
+	animation-duration: 1s;
+	animation-iteration-count: infinite;
+	animation-direction: alternate;
+}	
+#box1 span{
+	display: inline-block;
+  	vertical-align: middle;
+  	line-height: normal;  
+}
+.ease{
+	animation-duration: 5s;
+}
+/*
+Talking about animation-timing-function we have
+- ease-in will start the animation slowly, and finish at full speed.
+- ease-out will start the animation at full speed, then finish slowly.
+- ease-in-out will start slowly, be fastest at the middle of the animation, then finish slowly.
+- ease is like ease-in-out, except it starts slightly faster than it ends.
+- linear uses no easing.
+*/
+#timing1{
+	animation-timing-function: ease;
+}
+#timing2{
+	animation-timing-function: ease-in;
+}
+#timing3{
+	animation-timing-function: ease-out;
+}
+#timing4{
+	animation-timing-function: ease-in-out;
+}
+#timing5{
+	animation-timing-function: linear;
+}
+#space{
+	background-image: url('../img/space.jpg');
+	height: 700px;
+	position: relative;
+	background-repeat: repeat;
+	background-color: black;
+	background-position: 0;
+	/* Animation code */	
+	animation-name: travel;
+	animation-duration: 5s;
+	animation-direction: linear;
+	animation-iteration-count: infinite;
+}
+#ship{
+	width: 200px;
+	height: 120px;
+	position: absolute;
+	bottom: 1%;
+	/* Animation code */
+	animation-name: fly;
+	animation-duration: 5s;
+	animation-direction: ease;
+	animation-iteration-count: infinite;
+}
