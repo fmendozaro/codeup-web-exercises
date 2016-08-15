@@ -62,7 +62,7 @@ body{
 	z-index: 3; 
 	/*Animation code*/
 	animation-name: logoAn;
-	animation-duration: 1s;
+	animation-duration: 3s;
 	animation-direction: ease;
 	animation-iteration-count: 1;
 }
@@ -92,6 +92,7 @@ body{
 #menu li{
 	list-style: none;
 	display: inline-block;
+	color:#9D9576;
 	z-index: 4;
 	padding: 0 40px;
 	font-family: 'Raleway', sans-serif;

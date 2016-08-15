@@ -20,7 +20,7 @@
 						<span class="menu-bg"></span>
 					</li>
 					<li>
-						<a href="about_us.html">About Us</a>
+						<a href="biography.html">Biography</a>
 						<span class="menu-bg"></span>
 					</li>
 					<li>
