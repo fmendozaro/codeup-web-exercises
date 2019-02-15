@@ -9,17 +9,24 @@
             overflow: hidden;
             font-family: 'Segoe UI', Helvetica, Arial, Sans-Serif
         }
+
         #myMap {
-            width: 100vw; height: 100vh;
+            width: 100vw;
+            height: 100vh;
         }
     </style>
     <meta http-equiv='Content-Type' content='text/html; charset=utf-8'/>
-    <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AtvGyfiIqiBREujnGbJ0oI2rt3SExscxQtrdr7TZnujADXDo-ML7G8gtRCILjApa'></script>
-    <script type='text/javascript' src="map.js"></script>
 </head>
-<body onload='loadMapScenario();'>
-<div id='printoutPanel'></div>
-
-<div id='myMap'></div>
-</body>
+    <body onload='loadMapScenario();'>
+        <br>
+        <form action="" id="search-form">
+            <label for="address">Address</label>
+            <input type="text" name="address" id="address" placeholder="type address">
+            <button id="search">Search</button>
+        </form>
+        <br>
+        <div id='myMap'></div>
+        <script type='text/javascript' src='https://www.bing.com/api/maps/mapcontrol?key=AtvGyfiIqiBREujnGbJ0oI2rt3SExscxQtrdr7TZnujADXDo-ML7G8gtRCILjApa'></script>
+        <script type='text/javascript' src="map.js"></script>
+    </body>
 </html>
