@@ -12,9 +12,13 @@
         }
         #map {
             width: 100%;
-            height: 100vh;
+            height: 50vh;
             margin: 20px 0;
             background-color: #3bb1ed;
+        }
+        .icon {
+            display: block;
+            margin: 0 auto;
         }
     </style>
 </head>
@@ -37,6 +41,12 @@
     </div>
 </main>
 
+<ul class="list-group list-group-flush">
+    <li class="list-group-item">Cras justo odio</li>
+    <li class="list-group-item">Dapibus ac facilisis in</li>
+    <li class="list-group-item">Vestibulum at eros</li>
+</ul>
+
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
@@ -47,13 +57,8 @@
 
         var cityTitle = $("#city-name");
         var weatherArea = $("#weather-area");
-        var weatherInfoTemplate = "<div class=\"card\">\n" +
-            "        <div class=\"card-body\">\n" +
-            "            <h5 class=\"card-title\">Card title</h5>\n" +
-            "            <p class=\"card-text\">This is a longer card with supporting text below as a natural lead-in to additional content. This content is a little bit longer.</p>\n" +
-            "            <p class=\"card-text\"><small class=\"text-muted\">Last updated 3 mins ago</small></p>\n" +
-            "        </div>\n" +
-            "    </div>";
+        var weatherInfoTemplate = "";
+        var daysCounter = 0;
 
         function getForecast(city){
             $.get("http://api.openweathermap.org/data/2.5/forecast", {
@@ -65,10 +70,28 @@
                 cityTitle.text(data.city.name);
                 data.list.forEach(function(el, index){
                     // console.log(el);
-                    if(index % 8 === 0){
+                    if(daysCounter === 0){
+                        weatherInfoTemplate = "<div class=\"card\">\n" +
+                            "<div class=\"card-header text-center\">"+ el.dt_txt.slice(0, 10) +"</div>\n" +
+                            "<div class=\"card-body\">\n" +
+                            "<h6 class=\"card-text text-center\">"+ el.main.temp_min + "°F / " + el.main.temp_max+"°F</h6>\n" +
+                            "<img class='icon' src=\"http://openweathermap.org/img/w/"+ el.weather[0].icon + ".png\">" +
+                            "<ul class=\"list-group list-group-flush\">"+
+                            "<li class=\"list-group-item\">Description: <small class=\"text-muted\">"+ el.weather[0].description +"</small></li>\n" +
+                            "<li class=\"list-group-item\">Humidity: <small class=\"text-muted\">"+ el.main.humidity +"</small></li>\n" +
+                            "<li class=\"list-group-item\">Wind: <small class=\"text-muted\">"+ el.wind.speed +"</small></li>\n" +
+                            "<li class=\"list-group-item\">Pressure: <small class=\"text-muted\">"+ el.main.pressure +"</small></li>\n" +
+                            "</ul>"+
+                            "</div>\n" +
+                            "</div>";
                         weatherArea.append(weatherInfoTemplate);
                     }
 
+                    if(daysCounter < 8){
+                        daysCounter++;
+                    }else{
+                        daysCounter = 0;
+                    }
                 });
             });
         }
