@@ -24,7 +24,7 @@
 </head>
 <body>
 
-<main class="container">
+<main class="container-fluid">
     <div class="row">
         <div class="col">
             <h1>Weather App</h1>
@@ -40,12 +40,6 @@
         </div>
     </div>
 </main>
-
-<ul class="list-group list-group-flush">
-    <li class="list-group-item">Cras justo odio</li>
-    <li class="list-group-item">Dapibus ac facilisis in</li>
-    <li class="list-group-item">Vestibulum at eros</li>
-</ul>
 
 <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
@@ -67,7 +61,7 @@
                 units: "imperial"
             }).done(function(data) {
                 console.log('5 day forecast', data);
-                cityTitle.text(data.city.name);
+                cityTitle.text('Current city: ' + data.city.name);
                 data.list.forEach(function(el, index){
                     // console.log(el);
                     if(daysCounter === 0){
@@ -77,10 +71,10 @@
                             "<h6 class=\"card-text text-center\">"+ el.main.temp_min + "°F / " + el.main.temp_max+"°F</h6>\n" +
                             "<img class='icon' src=\"http://openweathermap.org/img/w/"+ el.weather[0].icon + ".png\">" +
                             "<ul class=\"list-group list-group-flush\">"+
-                            "<li class=\"list-group-item\">Description: <small class=\"text-muted\">"+ el.weather[0].description +"</small></li>\n" +
-                            "<li class=\"list-group-item\">Humidity: <small class=\"text-muted\">"+ el.main.humidity +"</small></li>\n" +
-                            "<li class=\"list-group-item\">Wind: <small class=\"text-muted\">"+ el.wind.speed +"</small></li>\n" +
-                            "<li class=\"list-group-item\">Pressure: <small class=\"text-muted\">"+ el.main.pressure +"</small></li>\n" +
+                            "<li class=\"list-group-item\">Description: <strong>"+ el.weather[0].description +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Humidity: <strong>"+ el.main.humidity +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Wind: <strong>"+ el.wind.speed +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Pressure: <strong>"+ el.main.pressure +"</strong></li>\n" +
                             "</ul>"+
                             "</div>\n" +
                             "</div>";
