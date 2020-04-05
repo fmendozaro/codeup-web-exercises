@@ -5,6 +5,7 @@
     <title>Weather Map API</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css' rel='stylesheet' />
     <style>
         .weather-info {
             margin: 10px 10px;
@@ -24,16 +25,15 @@
 </head>
 <body>
 
-<main class="container-fluid">
-    <div class="row">
-        <div class="col">
-            <h1>Weather App</h1>
-            <h3 id="city-name"></h3>
-        </div>
-    </div>
 
+<!-- As a heading -->
+<nav class="navbar navbar-light bg-primary text-white">
+    <h2 class=" mb-0">Weather App</h2>
+    <span id="city-name"> class="navbar-text"></span>
+</nav>
+
+<main class="container-fluid mt-2">
     <div id="weather-area" class="card-deck"></div>
-
     <div class="row">
         <div class="col">
             <div id="map"></div>
@@ -45,6 +45,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
 <script src="../js/keys.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js'></script>
 <script>
     $('document').ready(function () {
         'use strict';
@@ -54,21 +55,43 @@
         var weatherInfoTemplate = "";
         var daysCounter = 0;
 
-        function getForecast(city){
+        // Map
+        mapboxgl.accessToken = MAPBOX_KEY;
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v9',
+            zoom: 1
+        });
+
+        function onDragEnd() {
+            var coordinates = marker.getLngLat();
+            getForecast(coordinates);
+        }
+
+        var marker = new mapboxgl.Marker({
+            draggable: true
+        }).setLngLat([0, 0]).addTo(map);
+
+        marker.on('dragend', onDragEnd);
+
+        function getForecast(coordinates){
             $.get("http://api.openweathermap.org/data/2.5/forecast", {
                 APPID: OPEN_WEATHER_APPID,
-                q:     city,
+                lat:     coordinates.lat,
+                lon: coordinates.lng,
                 units: "imperial"
             }).done(function(data) {
                 console.log('5 day forecast', data);
                 cityTitle.text('Current city: ' + data.city.name);
+                weatherArea.empty();
+                weatherArea.fadeOut();
                 data.list.forEach(function(el, index){
                     // console.log(el);
                     if(daysCounter === 0){
                         weatherInfoTemplate = "<div class=\"card\">\n" +
                             "<div class=\"card-header text-center\">"+ el.dt_txt.slice(0, 10) +"</div>\n" +
                             "<div class=\"card-body\">\n" +
-                            "<h6 class=\"card-text text-center\">"+ el.main.temp_min + "°F / " + el.main.temp_max+"°F</h6>\n" +
+                            "<h6 class=\"card-text text-center\">"+ el.main.temp + "°F / " + el.main.temp_max+"°F</h6>\n" +
                             "<img class='icon' src=\"http://openweathermap.org/img/w/"+ el.weather[0].icon + ".png\">" +
                             "<ul class=\"list-group list-group-flush\">"+
                             "<li class=\"list-group-item\">Description: <strong>"+ el.weather[0].description +"</strong></li>\n" +
@@ -87,10 +110,24 @@
                         daysCounter = 0;
                     }
                 });
+                weatherArea.fadeIn();
             });
         }
 
-        getForecast("Dallas, US");
+        getLocation();
+
+        function buildCoordsObj(position){
+            var coords = {lat: position.coords.latitude, lng: position.coords.longitude};
+            getForecast(coords);
+        }
+
+        function getLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(buildCoordsObj);
+            } else {
+                alert("Geolocation is not supported by this browser.");
+            }
+        }
 
     });
 </script>
