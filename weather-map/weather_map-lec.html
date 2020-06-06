@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Map API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css" integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj70gZWKYbI706tWS" crossorigin="anonymous">
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        .weather-info {
+            margin: 10px 10px;
+            background-color: #3bb1ed;
+        }
+        #map {
+            width: 100%;
+            height: 50vh;
+            margin: 20px 0;
+            background-color: #3bb1ed;
+        }
+        .icon {
+            display: block;
+            margin: 0 auto;
+        }
+    </style>
+</head>
+<body>
+
+
+<!-- As a heading -->
+<nav class="navbar navbar-light bg-primary text-white">
+    <h2 class=" mb-0">Weather App</h2>
+    <span id="city-name" class="navbar-text text-white font-weight-bold"></span>
+</nav>
+
+<main class="container-fluid mt-2">
+
+    <form class="form-inline m-3">
+            <div class="form-group m-3">
+                <label for="place-text" class="m-3">Place</label>
+                <input type="text" id="place-text" class="form-control" placeholder="Meso Maya, Dallas" value="Meso Maya, Dallas">
+            </div>
+            <div class="form-group m-3">
+                <button id="get-place-btn" class="btn btn-primary">Find</button>
+            </div>
+    </form>
+
+    <div id="weather-area" class="card-deck"></div>
+    <div class="row">
+        <div class="col">
+            <div id="map"></div>
+        </div>
+    </div>
+</main>
+
+<script src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js" integrity="sha384-wHAiFfRlMFy6i5SRaxvfOCifBUQy1xHdJ/yoi7FRNXMRBu5WHdZYu1hA6ZOblgut" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js" integrity="sha384-B0UglyR+jN6CkvvICOB2joaf5I4l3gm9GU6Hc1og6Ls7i6U/mkkaduKaBhlAXv9k" crossorigin="anonymous"></script>
+<script src="../js/keys.js"></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.9.0/mapbox-gl.js'></script>
+<script>
+    $('document').ready(function () {
+        'use strict';
+
+        var cityTitle = $("#city-name");
+        var weatherArea = $("#weather-area");
+        var weatherInfoTemplate = "";
+        var daysCounter = 0;
+        var saCoords = [-98.491142, 29.424349];
+
+        getForecast({lat: saCoords[1], lng: saCoords[0]});
+
+        // Map
+        mapboxgl.accessToken = MAPBOX_KEY;
+        var map = new mapboxgl.Map({
+            container: 'map',
+            style: 'mapbox://styles/mapbox/streets-v9',
+            zoom: 10,
+            center: saCoords
+        });
+
+        function onDragEnd() {
+            var coordinates = marker.getLngLat();
+            getForecast(coordinates);
+        }
+
+        var marker = new mapboxgl.Marker({
+            draggable: true
+        }).setLngLat(saCoords).addTo(map);
+
+        marker.on('dragend', onDragEnd);
+
+        function getForecast(coordinates){
+            $.get("http://api.openweathermap.org/data/2.5/forecast", {
+                APPID: OPEN_WEATHER_APPID,
+                lat:     coordinates.lat,
+                lon: coordinates.lng,
+                units: "imperial"
+            }).done(function(data) {
+                console.log('5 day forecast', data);
+                cityTitle.text('Current city: ' + data.city.name);
+                marker.setLngLat([coordinates.lng, coordinates.lat]);
+                weatherArea.empty();
+                weatherArea.fadeOut();
+                map.flyTo({center: [coordinates.lng, coordinates.lat], zoom: 19});
+                data.list.forEach(function(el, index){
+                    // console.log(el);
+                    if(daysCounter === 0){
+                        weatherInfoTemplate = "<div class=\"card\">\n" +
+                            "<div class=\"card-header text-center\">"+ el.dt_txt.slice(0, 10) +"</div>\n" +
+                            "<div class=\"card-body\">\n" +
+                            "<h6 class=\"card-text text-center\">"+ el.main.temp + "°F / " + el.main.temp_max+"°F</h6>\n" +
+                            "<img class='icon' src=\"http://openweathermap.org/img/w/"+ el.weather[0].icon + ".png\">" +
+                            "<ul class=\"list-group list-group-flush\">"+
+                            "<li class=\"list-group-item\">Description: <strong>"+ el.weather[0].description +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Humidity: <strong>"+ el.main.humidity +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Wind: <strong>"+ el.wind.speed +"</strong></li>\n" +
+                            "<li class=\"list-group-item\">Pressure: <strong>"+ el.main.pressure +"</strong></li>\n" +
+                            "</ul>"+
+                            "</div>\n" +
+                            "</div>";
+                        weatherArea.append(weatherInfoTemplate);
+                    }
+
+                    if(daysCounter < 8){
+                        daysCounter++;
+                    }else{
+                        daysCounter = 0;
+                    }
+                });
+                weatherArea.fadeIn();
+            });
+        }
+
+        function buildCoordsObj(latitude, longitude){
+            getForecast({lat: latitude, lng: longitude});
+        }
+
+        $("#get-place-btn").click(function(e){
+            e.preventDefault();
+            geocode($("#place-text").val());
+        });
+
+        function geocode(search) {
+            var baseUrl = 'https://api.mapbox.com';
+            var endPoint = '/geocoding/v5/mapbox.places/';
+            return fetch(baseUrl + endPoint + encodeURIComponent(search) + '.json' + "?" + 'access_token=' + mapboxgl.accessToken)
+                .then(function(res) {
+                    return res.json();
+                }).then(function(data) {
+                    console.log(data);
+                    buildCoordsObj(data.features[0].center[1], data.features[0].center[0]);
+                });
+        }
+
+    });
+</script>
+</body>
+</html>

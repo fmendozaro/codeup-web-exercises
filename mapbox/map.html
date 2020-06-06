@@ -3,22 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
-    <link href='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.css' rel='stylesheet' />
-
+    <link href='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.css' rel='stylesheet' />
+    <style>
+        #map {
+            /* the width and height may be set to any size */
+            width: 100%;
+            height: 700px;
+        }
+    </style>
 </head>
 <body>
-<div id='map' style='width: 400px; height: 300px;'></div>
+<div id='map'></div>
 
-
-<script src='https://api.mapbox.com/mapbox-gl-js/v0.53.0/mapbox-gl.js'></script>
+<script src='../js/keys.js'></script>
+<script src='https://api.mapbox.com/mapbox-gl-js/v1.8.1/mapbox-gl.js'></script>
 <script>
-    mapboxgl.accessToken = 'pk.eyJ1IjoiZmVybmFuZG96YSIsImEiOiJjanNleDA5bGYwZmxjNDNtbmIwam13eHZ5In0.njXk18ws_mzuiBAK9g1xUA';
+    mapboxgl.accessToken = MAPBOX_KEY;
     var map = new mapboxgl.Map({
         container: 'map',
         style: 'mapbox://styles/mapbox/streets-v11',
-        zoom: 10,
-        center: [-98.4916, 29.4252]
+        zoom: 10
     });
+
+    function geocode(search, token) {
+        var baseUrl = 'https://api.mapbox.com';
+        var endPoint = '/geocoding/v5/mapbox.places/';
+        return fetch(baseUrl + endPoint + encodeURIComponent(search) + '.json' + "?" + 'access_token=' + token)
+            .then(function(res) {
+                return res.json();
+                // to get all the data from the request, comment out the following three lines...
+            }).then(function(data) {
+                return data.features[0].center;
+            });
+    }
+
+    function reverseGeocode(coordinates, token) {
+        var baseUrl = 'https://api.mapbox.com';
+        var endPoint = '/geocoding/v5/mapbox.places/';
+        return fetch(baseUrl + endPoint + coordinates.lng + "," + coordinates.lat + '.json' + "?" + 'access_token=' + token)
+            .then(function(res) {
+                return res.json();
+            })
+            // to get all the data from the request, comment out the following three lines...
+            .then(function(data) {
+                return data.features[0].place_name;
+            });
+    }
+
+    geocode("Dallas, Texas", mapboxgl.accessToken);
+
 </script>
 </body>
 </html>

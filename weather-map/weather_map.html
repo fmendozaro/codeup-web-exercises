@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Weather Map API</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <link href="https://fonts.googleapis.com/css?family=Pacifico" rel="stylesheet">
+    <style>
+        body {
+            background-size: cover;
+            background-attachment: fixed;
+            height: 100%;
+            width: 100%;
+        }
+
+        .forecast {
+            background-color: #F2F2F2;
+            border: 1px solid darkgray;
+            text-align: center;
+            padding-top: 15px;
+            padding-bottom: 15px;
+            margin-top: 10px;
+        }
+
+        .forecast:hover, .options:hover {
+            opacity: 0.7;
+        }
+
+        .container {
+            width: 90%;
+            margin-top: 35px;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        #map {
+            height: 500px;
+            margin-top: 20px;
+            border: 1px solid darkgray;
+        }
+
+        #city {
+            font-size: 20px;
+            padding-left: 25px;
+        }
+
+        #logo img {
+            width: 22%;
+            margin-bottom: -5%;
+            margin-top: -5%;
+        }
+
+        #refresh {
+            font-size: 35px;
+            font-family: 'Pacifico', cursive;
+            padding-left: 20px;
+            text-decoration: none;
+
+        }
+
+        #logo {
+            background-color: #E9F1F5;
+        }
+
+        .dayOfWeek {
+            font-size: 23px;
+            color: #23527C;
+            font-weight: bold;
+        }
+
+        .icons {
+            width: 25px;
+            height: 25px;
+        }
+
+        .options {
+            background-color: #F2F2F2;
+            border: 1px solid darkgray;
+            text-align: center;
+            height: 30px;
+            font-size: 18px;
+            color: green;
+            font-weight: bold;
+        }
+
+        .temp {
+            font-size: 25px;
+        }
+
+        .active {
+            background-color: #bababa;
+        }
+
+        .more-info {
+            display: none;
+        }
+
+        @media screen and (max-width: 600px) {
+            .forecast {
+                padding: 0;
+            }
+
+            .options {
+                padding: 0;
+            }
+
+            .dayOfWeek {
+                font-size: 18px;
+            }
+
+            .temp {
+                font-size: 18px;
+            }
+        }
+
+    </style>
+</head>
+<body>
+
+<header>
+    <div id="logo">
+        <img src="img/googleweather.gif" alt="">
+        <a href="weather_map.html" id="refresh">Weather Channel</a>
+    </div>
+    <nav class="navbar navbar-inverse">
+        <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a id="city" class="navbar-brand" href="#"></a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
+            <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+                <form class="navbar-form navbar-right">
+                    <div class="form-group">
+                        <input type="text" id="search" class="form-control" placeholder="Search city...">
+                    </div>
+                    <button id="btn-go" type="submit" class="btn btn-default">GO</button>
+                </form>
+            </div><!-- /.navbar-collapse -->
+        </div><!-- /.container-fluid -->
+    </nav>
+</header>
+
+<main class="container">
+    <div class="row">
+        <div data-option=1  class="col-xs-4 col-sm-2 options">Today</div>
+        <div data-option=3  class="col-xs-4 col-sm-2 options active">5 days</div>
+    </div>
+    <div class="row">
+        <div id="day1"  data-day=0 class="col-xs-4 forecast"></div>
+        <div id="day2"  data-day=1 class="col-xs-4 forecast"></div>
+        <div id="day3"  data-day=2 class="col-xs-4 forecast"></div>
+        <div id="day4"  data-day=2 class="hide forecast"></div>
+        <div id="day5"  data-day=2 class="hide forecast"></div>
+    </div>
+
+    <div id="map" class="row"></div>
+
+</main>
+
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDJ2Xm83TAgKMZZl5zIl65u2x-Z7NUwfh4-hDpkSl-vU"></script>
+
+<script>
+    $('document').ready(function () {
+        'use strict';
+
+        // Declarations for Google Map API
+        var map, lat, lng, mapOptions, marker, infowindow;
+
+        //Declarations for weather API
+        var object, city = "San Antonio, US", url = "https://api.openweathermap.org/data/2.5/forecast";
+        var weatherOptions = {
+            APPID: "0fe84464bac95c3e94e298730f82c13c",
+            q: city,
+            cnt: 16,
+            units: "imperial"
+        };
+
+        function updateInfoWindow() {
+            var content = '';
+            content  = '<b style="font-size: 15px">Today </b>';
+            content += '<br> <img src="http://openweathermap.org/img/w/' + object.list[0].weather[0].icon + '.png">';
+            content += '<br>' + parseInt(object.list[0].temp.max) + '&deg;' + '/' + parseInt(object.list[0].temp.min) + '&deg;'+ '</b>';
+            infowindow = new google.maps.InfoWindow({
+                content: content
+            });
+            infowindow.open(map, marker);
+        }
+
+        function renderMap(lat, lng) {
+            mapOptions = {
+                zoom: 8,
+                center: {lat: lat, lng: lng}
+            };
+            map = new google.maps.Map(document.getElementById('map'), mapOptions);
+
+            marker = new google.maps.Marker({
+                map: map,
+                draggable: true,
+                animation: google.maps.Animation.DROP,
+                position: {lat: lat, lng: lng}
+            });
+
+            updateInfoWindow();
+        }
+
+        function update5DaysForecast(data) {
+            console.log(data);
+
+            data.list.forEach(function (list, index) {
+                var output = '';
+                output = getDate(index);
+                output += '<br> <img src="http://openweathermap.org/img/w/' + list.weather[0].icon + '.png">';
+                // output += '<br><b class="temp">' + parseInt(list.temp.max) + '&deg;' + '/' + parseInt(list.temp.min) + '&deg;'+ '</b>';
+                output += '<br>' + firstLetterUpperCase(list.weather[0].description);
+                output += '<br><img class="icons" src="img/humidity.png">' + list.humidity + '%';
+                output += '<br><img class="icons" src="img/wind.png"> ' + degToCompassDir(list.deg)+ ' ' + parseInt(list.speed) + ' MPH';
+                output += '<br><a class="more">More</a>';
+                output += '<div class="more-info"><img class="icons" src="img/pressure.png"> ' + parseInt(list.pressure) + ' hPa';
+                output += '<br><img class="icons" src="img/cloudiness.png"> ' + list.clouds + ' %';
+                output += '<br><a class="less">Less</a></div>';
+                $('#day' + (index+1)).html(output);
+            });
+
+            $('#city').text(data.city.name);
+
+            //Update global variables
+            lat = data.city.coord.lat;
+            lng = data.city.coord.lon;
+            object = data;
+
+            //Update background to current weather
+            $('body').css('background-image', 'url("img/' + (data.list[0].weather[0].main).toLowerCase() + '.gif")');
+        }
+
+        function updateForecastAndMap(data) {
+            update5DaysForecast(data);
+
+            renderMap(lat, lng);
+
+            marker.addListener('click', markerBounceAnimation);
+
+            marker.addListener('dragend', function(event){
+                markerDragEnd(event);
+            });
+        }
+
+        function markerBounceAnimation() {
+            if (marker.getAnimation() !== null) {
+                marker.setAnimation(null);
+            } else {
+                marker.setAnimation(google.maps.Animation.BOUNCE);
+            }
+        }
+
+        function markerDragEnd(event) {
+
+            weatherOptions.lat = event.latLng.lat();
+            weatherOptions.lon = event.latLng.lng();
+            delete weatherOptions.q;
+
+            $.get(url, weatherOptions).done(function (data) {
+                update5DaysForecast(data);
+                updateInfoWindow();
+            });
+        }
+
+        function getDate(day) {  //today: day=0, tomorrow: day=1, dayAfterTomorrow: day=2 ...
+            var today = new Date(), date, indexDayOfWeek;
+            var dayOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday","Saturday"];
+            var month = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
+            if(day != 0) {
+                day = new Date(today.getTime() + day * (24 * 60 * 60 * 1000));
+                indexDayOfWeek = day.getDay();
+                date = month[day.getMonth()] + ' ' + day.getDate();
+                return '<span class="dayOfWeek">' + dayOfWeek[indexDayOfWeek] + '</span> <br>' + date;
+            } else {
+                return '<span class="dayOfWeek"> Today </span> <br>' + month[today.getMonth()] + ' ' + today.getDate();
+            }
+        }
+
+        function degToCompassDir(deg) {
+            var compassDir = ["N","NNE","NE","ENE","E","ESE","SE","SSE","S","SSW","SW","WSW","W","WNW","NW","NNW","N"];
+            return compassDir[Math.round(deg/22.5)];
+        }
+
+        function firstLetterUpperCase(string) {
+            return (string.substring(0,1)).toUpperCase() + string.substring(1,string.length);
+        }
+
+        function toggleColClass(days, cols) {
+            for(var i=1; i<=days; i++) {
+                if(days % 4 === 0) {
+                    $('#day' + i).toggleClass('col-xs-6 col-sm-' + cols + ' hide');
+                } else {
+                    $('#day' + i).toggleClass('col-xs-' + cols + ' hide');
+                }
+            }
+        }
+
+
+        $.get(url, weatherOptions).done(function (data) {
+
+            //Update 3 days forecast and google maps
+            updateForecastAndMap(data);
+
+
+            $('.forecast').click(function () {
+                //Update background when it clicked a forecast
+                $('body').css('background-image', 'url("img/' + (object.list[$(this).attr('data-day')].weather[0].main).toLowerCase() + '.gif")');
+            });
+
+            $('#btn-go').click(function (event) {
+                event.preventDefault();
+                weatherOptions.q = $('#search').val();
+                delete weatherOptions.lat;
+                delete weatherOptions.lng;
+
+                $.get(url, weatherOptions).done(function (data) {
+                    //Update 3 days forecast and google maps
+                    updateForecastAndMap(data);
+                });
+            });
+
+            $('.options').click(function () {
+
+                $('.options').each(function (i, option) {
+                    $(option).removeClass('active');
+                });
+                $(this).addClass('active');
+
+                $('.forecast').removeClass('col-xs-12 col-xs-6 col-xs-4 col-xs-3 col-sm-3').addClass('hide');
+
+                switch ($(this).attr('data-option')) {
+                    case '1':                                 //Today
+                        $('#day1').toggleClass('col-xs-12 hide');
+                        break;
+                    case '3':                                 //3 days forecast
+                        toggleColClass(3, 4);
+                        break;
+                    case '4':                                 //4 days forecast
+                        toggleColClass(4, 3);
+                        break;
+                    case '6':                                 //6 days forecast
+                        toggleColClass(6, 4);
+                        break;
+                    case '8':                                 //8 days forecast
+                        toggleColClass(8, 3);
+                        break;
+                    case '16':                                 //16 days forecast
+                        toggleColClass(16, 3);
+                        break;
+                }
+            });
+
+            $('.more').click(function (event) {
+                event.preventDefault();
+                $('.more').next().slideToggle();
+                $('.more').slideToggle();
+            });
+
+            $('.less').click(function (event) {
+                event.preventDefault();
+                $('.less').parent().slideToggle();
+                $('.less').parent().prev().show();
+            });
+
+        });
+
+    });
+</script>
+</body>
+</html>
