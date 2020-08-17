@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            margin: 0;
+            background-color: #8CD0C1;
+        }
+        h1, h2, h3 {
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+        h3 {
+            color: grey;
+        }
+        nav {
+            background: #333333;
+        }
+        ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+            display: flex;
+        }
+        nav a {
+            text-decoration: none;
+            color: white;
+            font-family: Verdana;
+            display: inline-flex;
+            padding: 1em;
+        }
+        nav a:hover {
+            background: black;
+        }
+
+        nav ul li:nth-child(4) {
+            /*
+                this allows the last flex item to be right justified
+                by filling remaining space to the left of the flex item with margin
+            */
+            margin-left: auto;
+        }
+
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            flex-direction: row;
+        }
+
+        #box1 {
+            background-color: darkolivegreen;
+        }
+        #box2 {
+            background-color: deeppink;
+            /*margin-right: auto;*/
+        }
+        #box3 {
+            background-color: cornflowerblue;
+
+        }
+        .box {
+
+            width: 200px;
+            height: 100px;
+        }
+
+        /*    cards */
+
+        hr {
+            border-top: 1px solid whitesmoke;
+            width: 90px;
+        }
+        .card {
+            margin: .5em;
+            border-radius: 2px;
+            background: white;
+            width: 250px;
+            height: 350px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-around;
+        }
+        img {
+            border-radius: 120px;
+            width: 120px;
+        }
+        i {
+            color: grey;
+        }
+        .text-section {
+            position: relative;
+            bottom: 1.5em;
+        }
+        .icons{
+            width: 160px;
+            display: flex;
+            justify-content: space-evenly;
+        }
+        .icons i {
+            font-size: 2.2em;
+        }
+
+    </style>
+</head>
+<body>
+
+<nav>
+    <ul>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">News</a></li>
+        <li><a href="#">Contact</a></li>
+        <li><a href="#">About</a></li>
+    </ul>
+</nav>
+
+<article class="card">
+    <section>
+        <img src="https://fer-uig.glitch.me" alt="profile-image" >
+    </section>
+    <section class="text-section">
+        <h2>Ron Swanson</h2>
+        <h3>Director</h3>
+        <hr>
+    </section>
+    <section class="icons">
+        <a href="#"><i class="fab fa-github"></i></a>
+        <a href="#"><i class="fab fa-twitter"></i></a>
+        <a href="#"><i class="fab fa-linkedin"></i></a>
+    </section>
+</article>
+
+<main class="container">
+    <div class="box" id="box1"></div>
+    <div class="box" id="box2"></div>
+    <div class="box" id="box3"></div>
+</main>
+<script src="https://kit.fontawesome.com/ac39dd7048.js" crossorigin="anonymous"></script>
+</body>
+</html>
